@@ -96,8 +96,9 @@ type (
 
 	// QueryExpectation struct hold expectation field, err, and result
 	QueryExpectation struct {
-		table  *string
-		output *dynamodb.QueryOutput
+		table         *string
+		output        *dynamodb.QueryOutput
+		expectedQuery *dynamodb.QueryInput
 	}
 
 	// TransactWriteItemsExpectation struct holds field, err, and result
