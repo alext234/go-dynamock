@@ -1,7 +1,9 @@
 package examples
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -64,4 +66,24 @@ func GetTransactGetItems(id string) error {
 	}
 
 	return nil
+}
+
+// QueryItems - example func using Query method
+func QueryItems(id string) (*string, error) {
+	query := &dynamodb.QueryInput{
+		TableName:                 aws.String("employee"),
+		KeyConditionExpression:    aws.String("id = :id"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":id": {S: aws.String(id)}},
+	}
+
+	result, err := Dyna.Db.Query(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range result.Items {
+		return item["name"].S, nil
+	}
+	return nil, errors.New("empty result")
 }

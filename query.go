@@ -2,6 +2,7 @@ package dynamock
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
@@ -28,6 +29,12 @@ func (e *MockDynamoDB) Query(input *dynamodb.QueryInput) (*dynamodb.QueryOutput,
 		if x.table != nil {
 			if *x.table != *input.TableName {
 				return &dynamodb.QueryOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
+			}
+		}
+
+		if x.expectedQuery != nil {
+			if !reflect.DeepEqual(x.expectedQuery, input) {
+				return &dynamodb.QueryOutput{}, fmt.Errorf("Expect query input %+v but found %+v", x.expectedQuery, input)
 			}
 		}
 
@@ -100,4 +107,10 @@ func (e *MockDynamoDB) QueryPagesWithContext(ctx aws.Context, input *dynamodb.Qu
 	}
 
 	return fmt.Errorf("Query Table By Page With Context Expectation Not Found")
+}
+
+// WithQueryInput set the expected query to be called
+func (e *QueryExpectation) WithQueryInput(expectedQuery *dynamodb.QueryInput) *QueryExpectation {
+	e.expectedQuery = expectedQuery
+	return e
 }
