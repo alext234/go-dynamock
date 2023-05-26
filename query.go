@@ -1,6 +1,7 @@
 package dynamock
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 
@@ -57,6 +58,9 @@ func (e *MockDynamoDB) QueryWithContext(ctx aws.Context, input *dynamodb.QueryIn
 				return &dynamodb.QueryOutput{}, fmt.Errorf("Expect table %s but found table %s", *x.table, *input.TableName)
 			}
 		}
+		if x.ctx == nil {
+			return &dynamodb.QueryOutput{}, fmt.Errorf("Expect context to be set but found nil context")
+		}
 
 		// delete first element of expectation
 		e.dynaMock.QueryExpect = append(e.dynaMock.QueryExpect[:0], e.dynaMock.QueryExpect[1:]...)
@@ -112,5 +116,11 @@ func (e *MockDynamoDB) QueryPagesWithContext(ctx aws.Context, input *dynamodb.Qu
 // WithQueryInput set the expected query to be called
 func (e *QueryExpectation) WithQueryInput(expectedQuery *dynamodb.QueryInput) *QueryExpectation {
 	e.expectedQuery = expectedQuery
+	return e
+}
+
+// WithContext set the context object
+func (e *QueryExpectation) WithContext(ctx context.Context) *QueryExpectation {
+	e.ctx = ctx
 	return e
 }

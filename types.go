@@ -1,6 +1,8 @@
 package dynamock
 
 import (
+	"context"
+
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
@@ -99,6 +101,7 @@ type (
 		table         *string
 		output        *dynamodb.QueryOutput
 		expectedQuery *dynamodb.QueryInput
+		ctx           context.Context
 	}
 
 	// TransactWriteItemsExpectation struct holds field, err, and result
