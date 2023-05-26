@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -77,6 +78,26 @@ func QueryItems(id string) (*string, error) {
 	}
 
 	result, err := Dyna.Db.Query(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range result.Items {
+		return item["name"].S, nil
+	}
+	return nil, errors.New("empty result")
+}
+
+// QueryItems - example func using QueryWithContext method
+func QueryItemsWithContext(ctx context.Context, id string) (*string, error) {
+	query := &dynamodb.QueryInput{
+		TableName:                 aws.String("employee"),
+		KeyConditionExpression:    aws.String("id = :id"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":id": {S: aws.String(id)}},
+	}
+
+	result, err := Dyna.Db.QueryWithContext(ctx, query)
 
 	if err != nil {
 		return nil, err

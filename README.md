@@ -4,7 +4,7 @@ Amazon Dynamo DB Mock Driver for Golang to Test Database Interactions.
 Originally forked from https://github.com/gusaul/go-dynamock and added more functionalities with examples:
 
 * `QueryInput` expectation.
-* More to come ..
+* `WithContext` expectation to support `QueryWithContext`.
 
 ## Install
 ```

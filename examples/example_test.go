@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"context"
 	"testing"
 
 	dynamock "github.com/alext234/go-dynamock"
@@ -74,6 +75,40 @@ func TestQueryItems(t *testing.T) {
 	mock.ExpectQuery().Table("employee").WithQueryInput(expectedQuery).WillReturns(result)
 
 	actualResult, err := QueryItems(idValue)
+	if err != nil {
+		t.Errorf("err is not nil %+v", err)
+	}
+
+	if actualResult != expectedResult {
+		t.Errorf("Test Fail")
+	}
+}
+
+func TestQueryItemsWithContext(t *testing.T) {
+	expectedResult := aws.String("haha")
+	result := dynamodb.QueryOutput{
+		Items: []map[string]*dynamodb.AttributeValue{
+			{
+				"name": {
+					S: expectedResult,
+				},
+			},
+		},
+	}
+	idValue := "1"
+	expectedQuery := &dynamodb.QueryInput{
+		TableName:                 aws.String("employee"),
+		KeyConditionExpression:    aws.String("id = :id"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":id": {S: aws.String(idValue)}},
+	}
+
+	ctx := context.Background()
+
+	mock.ExpectQuery().Table("employee").WithContext(ctx).
+		WithQueryInput(expectedQuery).
+		WillReturns(result)
+
+	actualResult, err := QueryItemsWithContext(ctx, idValue)
 	if err != nil {
 		t.Errorf("err is not nil %+v", err)
 	}
